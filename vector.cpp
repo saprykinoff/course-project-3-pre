@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <limits>
 #include <utility>
+#include <cassert>
 
 template <typename T>
 class Vector {
@@ -8,7 +9,7 @@ class Vector {
     std::size_t size_;
     std::size_t capacity_;
 
-    void realoc(size_t sz) {
+    void realloc(size_t sz) {
         T *nw = new T[sz];
         capacity_ = sz;
         for (int i = 0; i < size_; ++i) {
@@ -70,29 +71,29 @@ class Vector {
     }
 
     void assign(std::size_t size, T default_value = T()) {
-        realoc(size);
+        realloc(size);
         for (int i = 0; i < size; ++i) {
             data_[i] = default_value;
         }
     }
 
     T at(std::size_t index) const {
-        static_assert(index < 0 || index >= size_, "index out of bounds");
+        assert(index < 0 || index >= size_ && "index out of bounds");
         return data_[index];
     }
 
     T &operator[](std::size_t index) {
-        static_assert(index < 0 || index >= size_, "index out of bounds");
+        assert(index < 0 || index >= size_ && "index out of bounds");
         return data_[index];
     }
 
     T &front() const {
-        static_assert(size_ > 0, "There is no front in empty vector");
+        assert(size_ > 0 && "There is no front in empty vector");
         return data_[0];
     }
 
     T &back() const {
-        static_assert(size_ > 0, "There is no front in empty vector");
+        assert(size_ > 0 && "There is no front in empty vector");
         return data_[size_ - 1];
     }
 
@@ -118,29 +119,29 @@ class Vector {
 
     size_t capacity() const { return capacity_; }
 
-    void shrink_to_fit() { realoc(size_); }
+    void shrink_to_fit() { realloc(size_); }
 
     void clear() { size_ = 0; }
 
     void insert(std::size_t index, T value) {
-        static_assert(0 <= index && index <= size_, "index out of bounds");
+        assert(0 <= index && index <= size_ && "index out of bounds");
         push_back(value);
         for (int i = size_ - 1; i > index; i--) {
-            swap(data_[i], data_[i - 1]);
+            std::swap(data_[i], data_[i - 1]);
         }
     }
 
     T erase(std::size_t index) {
-        static_assert(0 <= index && index < size_, "index out of bounds");
+        assert(0 <= index && index < size_ && "index out of bounds");
         for (int i = index + 1; i < size_; i++) {
-            swap(data_[i], data_[i - 1]);
+            std::swap(data_[i], data_[i - 1]);
         }
         return pop_back();
     }
 
     void push_back(T value) {
         if (size_ == capacity_) {
-            realoc(capacity_ * 2 + 1);
+            realloc(capacity_ * 2 + 1);
         }
         data_[size_++] = value;
     }
@@ -149,7 +150,7 @@ class Vector {
 
     void resize(int size) {
         if (size > capacity_) {
-            realoc(size);
+            realloc(size);
         }
         size_ = size;
     }
@@ -161,4 +162,8 @@ class Vector {
     }
 };
 
-int main() {}
+int main() {
+    Vector<int> v;
+    v.push_back(1);
+    v.erase(0);
+}
