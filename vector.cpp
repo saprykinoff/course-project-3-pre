@@ -7,23 +7,21 @@
 namespace MyVector {
 template <typename T>
 class VectorIterator {
-    size_t index_;
     T *data_;
 
    public:
-    VectorIterator(size_t index, T *data) {
-        index_ = index;
+    VectorIterator(T *data) {
         data_ = data;
     }
     VectorIterator &operator++() {
-        index_++;
+        data_++;
         return *this;
     }
     bool operator!=(const VectorIterator &other) const {
-        return !(data_ == other.data_ && index_ == other.index_);
+        return data_ != other.data_ ;
     }
     const T &operator*() const {
-        return data_[index_];
+        return *data_;
     }
 };
 
