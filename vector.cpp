@@ -2,8 +2,8 @@
 #include <cstddef>
 #include <limits>
 #include <utility>
-namespace MyVector {
 
+namespace MyVector {
 template <typename T>
 class VectorIterator {
     size_t index_;
