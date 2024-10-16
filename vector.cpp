@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstddef>
+#include <iostream>
 #include <limits>
 #include <utility>
 
@@ -18,10 +19,12 @@ class VectorIterator {
         index_++;
         return *this;
     }
-    bool operator==(const VectorIterator &other) const {
-        return data_ == other.data_ && index_ == other.index_;
+    bool operator!=(const VectorIterator &other) const {
+        return !(data_ == other.data_ && index_ == other.index_);
     }
-    const T &operator*() const { return data_[index_]; }
+    const T &operator*() const {
+        return data_[index_];
+    }
 };
 
 template <typename T>
@@ -109,19 +112,28 @@ class Vector {
         return data_[size_ - 1];
     }
 
-    T *data() const { return data_; }
+    T *data() const {
+        return data_;
+    }
 
-    iterator begin() { return iterator(0, data_); }
+    iterator begin() {
+        return iterator(0, data_);
+    }
 
-    iterator end() { return iterator(size_, data_); }
+    iterator end() {
+        return iterator(size_, data_);
+    }
 
-    bool empty() const { return size_ == 0; }
+    bool empty() const {
+        return size_ == 0;
+    }
 
-    std::size_t size() const { return size_; }
+    std::size_t size() const {
+        return size_;
+    }
 
     std::size_t max_size() const {
-        // на подумать
-        return 0;
+        return std::numeric_limits<size_t>::max() / sizeof(T);
     }
 
     void reverse() {
@@ -130,11 +142,17 @@ class Vector {
         }
     }
 
-    size_t capacity() const { return capacity_; }
+    size_t capacity() const {
+        return capacity_;
+    }
 
-    void shrink_to_fit() { realloc(size_); }
+    void shrink_to_fit() {
+        realloc(size_);
+    }
 
-    void clear() { size_ = 0; }
+    void clear() {
+        size_ = 0;
+    }
 
     void insert(std::size_t index, T value) {
         assert(0 <= index && index <= size_ && "index out of bounds");
@@ -159,7 +177,9 @@ class Vector {
         data_[size_++] = value;
     }
 
-    T pop_back() { return data_[size_--]; }
+    T pop_back() {
+        return data_[size_--];
+    }
 
     void resize(int size) {
         if (size > capacity_) {
@@ -191,5 +211,21 @@ class Vector {
 int main() {
     MyVector::Vector<int> v;
     v.push_back(1);
+    v.push_back(2);
+    v.push_back(3);
+    v.push_back(4);
+    std::cout << "sz: " <<  v.size()<< ", cap:" << v.capacity() << ", v: ";
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it << ' ';
+    }
+    std::cout << "\n";
     v.erase(0);
+    v.pop_back();
+    v.push_back(5);
+
+    std::cout << "sz: " <<  v.size()<< ", cap:" << v.capacity() << ", v: ";
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it << ' ';
+    }
+    std::cout << "\n";
 }
