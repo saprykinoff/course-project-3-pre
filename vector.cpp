@@ -1,7 +1,28 @@
+#include <cassert>
 #include <cstddef>
 #include <limits>
 #include <utility>
-#include <cassert>
+namespace MyVector {
+
+template <typename T>
+class VectorIterator {
+    size_t index_;
+    T *data_;
+
+   public:
+    VectorIterator(size_t index, T *data) {
+        index_ = index;
+        data_ = data;
+    }
+    VectorIterator &operator++() {
+        index_++;
+        return *this;
+    }
+    bool operator==(const VectorIterator &other) const {
+        return data_ == other.data_ && index_ == other.index_;
+    }
+    const T &operator*() const { return data_[index_]; }
+};
 
 template <typename T>
 class Vector {
@@ -9,17 +30,8 @@ class Vector {
     std::size_t size_;
     std::size_t capacity_;
 
-    void realloc(size_t sz) {
-        T *nw = new T[sz];
-        capacity_ = sz;
-        for (int i = 0; i < size_; ++i) {
-            nw[i] = data_[i];
-        }
-        delete[] data_;
-        data_ = nw;
-    }
-
    public:
+    using iterator = MyVector::VectorIterator<T>;
     Vector() {
         data_ = nullptr;
         size_ = 0;
@@ -77,7 +89,7 @@ class Vector {
         }
     }
 
-    T at(std::size_t index) const {
+    const T &at(std::size_t index) const {
         assert(index < 0 || index >= size_ && "index out of bounds");
         return data_[index];
     }
@@ -87,20 +99,21 @@ class Vector {
         return data_[index];
     }
 
-    T &front() const {
+    const T &front() const {
         assert(size_ > 0 && "There is no front in empty vector");
         return data_[0];
     }
 
-    T &back() const {
+    const T &back() const {
         assert(size_ > 0 && "There is no front in empty vector");
         return data_[size_ - 1];
     }
 
     T *data() const { return data_; }
 
-    // begin()
-    // end()
+    iterator begin() { return iterator(0, data_); }
+
+    iterator end() { return iterator(size_, data_); }
 
     bool empty() const { return size_ == 0; }
 
@@ -160,10 +173,23 @@ class Vector {
         std::swap(size_, other.size_);
         std::swap(capacity_, other.capacity_);
     }
+
+   private:
+    void realloc(size_t sz) {
+        T *nw = new T[sz];
+        capacity_ = sz;
+        for (int i = 0; i < size_; ++i) {
+            nw[i] = data_[i];
+        }
+        delete[] data_;
+        data_ = nw;
+    }
 };
 
+}  // namespace MyVector
+
 int main() {
-    Vector<int> v;
+    MyVector::Vector<int> v;
     v.push_back(1);
     v.erase(0);
 }
