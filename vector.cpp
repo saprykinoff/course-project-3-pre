@@ -115,11 +115,11 @@ class Vector {
     }
 
     iterator begin() {
-        return iterator(0, data_);
+        return iterator(data_);
     }
 
     iterator end() {
-        return iterator(size_, data_);
+        return iterator(data_ + size_);
     }
 
     bool empty() const {
